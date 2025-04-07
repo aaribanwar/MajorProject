@@ -1,0 +1,139 @@
+/* Ensure the body stretches fully */
+body {
+    background-color: paleturquoise;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Container for all cards */
+.all-listings {
+    background-color: azure;
+    padding: 20px;
+    border: 5px solid paleturquoise;
+    border-radius: 20px;
+    color: rgb(244, 144, 127);
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Ensures equal width */
+    gap: 20px; /* Space between grid items */
+    align-items: stretch; /* Ensures uniform height */
+    width: 90vw;  /* Adjusted for better centering */
+    max-width: 1200px;
+    margin: 0 auto; /* Centers content */
+}
+
+/* Individual card styles */
+.card {
+    border: 2px solid paleturquoise;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    background-color: white;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1), 
+                -5px -5px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;  /* Ensures all cards take full grid space */
+    max-width: none; /* Removes artificial width limit */
+}
+
+/* Card Image */
+.card-img-top {
+    height: 200px; /* Fixed height to maintain consistency */
+    object-fit: cover; /* Ensures images don't stretch */
+    width: 100%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+/* Card Body */
+.card-body {
+    padding: 15px;
+    flex-grow: 1; /* Ensures the text area takes up remaining space */
+}
+
+/* Title Styling */
+.card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Price & Location */
+.card-text, .card h5 {
+    font-size: 1rem;
+    color: #666;
+}
+
+/* Button Styling */
+.btn-primary {
+    background-color: tomato;
+    border: none;
+    padding: 8px 12px;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    background-color: darkred;
+}
+
+/* Navbar */
+.navbar {
+    height: 5rem;
+    background-color: azure;
+}
+
+/* Navbar icons */
+.fa-compass {
+    color: paleturquoise;
+    font-size: 2rem;
+}
+
+/* Footer */
+.footer-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 3rem;
+    background-color: azure;
+}
+
+/* Footer Links */
+.footer-info-links a {
+    text-decoration: none;
+    color: tomato;
+    margin: 1rem;
+}
+
+.footer-info-links a:hover {
+    text-decoration: underline;
+}
+
+/* Social Icons */
+.footer-info-socials i {
+    margin: 1rem;
+}
+
+.anchor-card {
+    text-decoration: none;
+}
+
+.anchor-card:hover{
+    text-decoration: underline;
+    box-shadow: 0px 0px 5px tomato;
+    border-radius: 10px;
+}
+
+.card-img-overlay {
+    opacity: none;
+}
+
+.card-img-overlay:hover {
+    opacity: 0.15;
+    background-color: azure;
+}

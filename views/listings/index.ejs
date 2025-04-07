@@ -1,0 +1,35 @@
+<% layout("/layouts/boilerplate") %>
+<body>
+    
+   
+   
+
+
+
+    <div class="all-listings">  <!-- ✅ .all-listings starts BEFORE loop -->
+       
+        <% for (listing of listings) { %>
+            <a class="anchor-card" href="/listings/<%=listing.id  %>">
+            <div class="card">  <!-- ✅ Each card is inside loop -->
+                <img src="<%= listing.image.url %>" class="card-img-top" alt="<%= listing.image.filename %>">
+                <div class="card-img-overlay"></div>
+                <div class="card-body">
+                    <h5 class="card-title"><%= listing.title %></h5>
+                    <!-- <p class="card-text"><%= listing.description %></p> -->
+                    <h5>&#8377;<%= listing.price %> per night</h5>
+                    <p><%= listing.location %>, <%= listing.country %></p>  
+                    <!-- <a href="/listings/<%= listing._id %>" class="btn btn-primary">Details</a> -->
+                </div>
+            </div>  
+        </a>
+        <% } %>  <!-- ✅ Loop ends, but .all-listings is still open -->
+    </div>  <!-- ✅ Closing .all-listings AFTER loop -->
+    
+    
+    
+</div>
+
+
+
+
+</body>
