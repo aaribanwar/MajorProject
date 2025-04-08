@@ -1,0 +1,96 @@
+/* Base layout setup */
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: paleturquoise;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+/* Allow main content to grow and push footer down */
+main {
+    flex: 1;
+    padding: 2rem;
+}
+
+/* Heading styling */
+h1 {
+    color: rgb(244, 144, 127);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* Card wrapper for form */
+.form-card {
+    background-color: azure;
+    padding: 2rem;
+    border: 5px solid paleturquoise;
+    border-radius: 20px;
+    color: rgb(244, 144, 127);
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1), 
+                -5px -5px 15px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto; /* Center the card */
+}
+
+/* Form structure */
+.form-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Input group layout */
+.form-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* Inputs */
+.form-group input {
+    flex: 1 1 200px; /* flexible and responsive */
+    padding: 0.75rem;
+    border: 1px solid paleturquoise;
+    border-radius: 5px;
+    min-width: 0;    
+}
+
+/* Textarea styling */
+textarea {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid paleturquoise;
+    border-radius: 5px;
+    resize: vertical;
+}
+
+/* Button styling */
+button {
+    border: 1px solid paleturquoise;
+    border-radius: 5px;
+    background-color: white;
+    padding: 8px 16px;
+    font-weight: bold;
+    color: rgb(244, 144, 127);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+button:hover {
+    background-color: paleturquoise;
+    translate: 0px -2px;
+}
+
+/* Footer that stays at the bottom */
+footer {
+    background-color: azure;
+    text-align: center;
+    padding: 1rem;
+    color: rgb(244, 144, 127);
+    border-top: 2px solid paleturquoise;
+}
