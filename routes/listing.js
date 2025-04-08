@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Listing = require("../models/listing");
+const wrapAsync = require("../utils/wrapAsync");
 
 router.get("/", async (req, res) => {
     let listings = await Listing.find({});
@@ -9,20 +10,12 @@ router.get("/", async (req, res) => {
 });
 
 //post new
-router.post("/", async (req,res) => {
-    // let {title, description, image, price, location, country } = req.body;
-    // let listing = new Listing({
-    //     title: title,
-    //     description: description,
-    //     image: image,
-    //     price: price,
-    //     location: location,
-    //     country: country
-    // });
+router.post("/", wrapAsync(async (req,res,next) => {
     const listing = new Listing(req.body.listing);
     await listing.save();
     res.redirect("/listings");
-});
+}
+));
 router.get("/new", (req,res) => {
     console.log("Entered new log");
     res.render("./listings/new.ejs");
