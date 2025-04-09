@@ -5,9 +5,9 @@ const path = require("path");
 const methodOverride = require("method-override");
 const listingRoutes = require("./routes/listing");
 const ejsMate = require("ejs-mate");
-const wrapAsync = require("./utils/wrapAsync")
-const ExpressError = require("./utils/ExpressError")
-
+const wrapAsync = require("./utils/wrapAsync");
+const ExpressError = require("./utils/ExpressError");
+const listingSchema = require("./schema.js");
 
 
 const port = 8080;
@@ -38,9 +38,10 @@ app.all("*", (req,res,next) => {
 });
 //ERROR Handler
 app.use((err,req,res,next) => {
-    let {status, message } = err;
+    let {status=500, message="Default Error" } = err;
     console.log("Error handler in app.js activated");
-    res.status(status).send(message);
+    res.render("./listings/error.ejs",{err:err});
+    //res.status(status).send(message);
 });
 
 app.listen(port, () => {
