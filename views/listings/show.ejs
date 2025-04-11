@@ -2,19 +2,41 @@
 
 <body>
     <h1>Individual Listing</h1>
-    <div class="listing">
+<div class="all-listings">
+
+    <div class="card">
         <h3><%=listing.title%></h3>
         <p><%=listing.description  %></p>
-        <img src="<%=listing.image.url  %>" alt="<%=listing.image.filename%>">
+
+        <img src="<%=listing.image.url  %>" alt="<%=listing.image.filename%>" class="card-img-top">
         <h5>&#8377;<%=listing.price%></h5>
         <h5><%=listing.location  %></h5>
         <h6><%=listing.country  %></h6>
+    <div class="button-container">
         <form action="/listings/<%=listing._id  %>/edit">
             <button>Edit</button>
         </form>
-    </div>
+    
     <form action="/listings/<%=listing._id%>?_method=DELETE" method="post">
         <button>delete</button>
-
     </form>
+    </div>
+    </div>
+
+
+<div class="card mb-3 ">
+    <h3>Add A Review</h3>
+    <div>
+        <label for="rating">Rating</label>
+        <input type="range" min="1" max="5" id="rating" name="review[rating]">
+    </div>
+    <div>
+        <label for="comment">Comment</label>
+        <textarea name="review[comment]" id="comment" rows="5"></textarea>
+    </div>
+    <button>Submit</button>
+</div>
+
+
+</div>
 </body>

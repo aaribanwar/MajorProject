@@ -4,9 +4,11 @@ const mongoose = require("mongoose");
     await mongoose.connect("mongodb://127.0.0.1:27017/airbnb");
 }
 
-await main();
+main()
+.then(res => console.log("review mongoose connected"))
+.catch(err => console.log(err));
 
-reviewSchema = mongoose.Schema({
+const reviewSchema = new mongoose.Schema({
     content: {
         type: String
     },

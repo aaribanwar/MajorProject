@@ -19,7 +19,7 @@ body {
     gap: 20px; /* Space between grid items */
     align-items: stretch; /* Ensures uniform height */
     width: 90vw;  /* Adjusted for better centering */
-    max-width: 1200px;
+    max-width: 95vh;
     margin: 0 auto; /* Centers content */
 }
 
@@ -29,7 +29,8 @@ body {
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
+    align-items: center;
     height: 100%;
     background-color: azure;
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1), 
@@ -136,4 +137,19 @@ body {
 .card-img-overlay:hover {
     opacity: 0.15;
     background-color: azure;
+}
+
+.button-container{
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+}
+
+textarea {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    border: 1px solid paleturquoise;
+    border-radius: 5px;
+    resize: vertical;
 }

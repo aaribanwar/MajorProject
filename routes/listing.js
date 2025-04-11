@@ -5,6 +5,9 @@ const wrapAsync = require("../utils/wrapAsync");
 const ExpressError = require("../utils/ExpressError");
 const listingSchema = require("../schema.js");
 
+//new reviews
+const Review = require("../models/review");
+
 
 router.get("/", wrapAsync(async (req, res) => {
     let listings = await Listing.find({});
@@ -62,12 +65,19 @@ router.put("/:id", validateListing, wrapAsync(async (req,res) => {
 }));
 
 
+
+
 //delete
 router.delete("/:id", wrapAsync(async (req,res) => {
     let {id} = req.params;
     await Listing.findByIdAndDelete(id);
     res.redirect("/listings");
 }));
+
+//REVIEWSSSSSS
+router.post("/:id/reviews", wrapAsync(async (err,req,res,next) => {
+    const review = new Review(req.body.review);
+}))
 
 
 module.exports = router;
