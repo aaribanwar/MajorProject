@@ -95,19 +95,20 @@ body {
     font-size: 2rem;
 }
 
-/* Footer */
+
 .footer-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 3rem;
+    height: 5rem;
     background-color: azure;
+    padding: 2rem 0rem 1rem; 
 }
 
 /* Footer Links */
-.footer-info-links a {
+.footer-info a {
     text-decoration: none;
-    color: tomato;
+    color: rgb(255, 99, 71,0.7);
     margin: 1rem;
 }
 
@@ -117,7 +118,7 @@ body {
 
 /* Social Icons */
 .footer-info-socials i {
-    margin: 1rem;
+    margin: 1rem 0rem 0rem 1rem;
 }
 
 .anchor-card {

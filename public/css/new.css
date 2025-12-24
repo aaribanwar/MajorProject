@@ -8,6 +8,7 @@ html, body {
     background-color: paleturquoise;
     box-sizing: border-box;
     font-family: sans-serif;
+    overscroll-behavior: none;
 }
 
 /* Allow main content to grow and push footer down */
@@ -87,10 +88,14 @@ button:hover {
 }
 
 /* Footer that stays at the bottom */
-footer {
+/* footer-info {
     background-color: azure;
     text-align: center;
-    padding: 1rem;
     color: rgb(244, 144, 127);
     border-top: 2px solid paleturquoise;
-}
+    margin-top: auto;
+    padding: 3rem 1rem; 
+    min-height: 180px;
+    outline: 2px dashed red;
+
+} */

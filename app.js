@@ -28,7 +28,7 @@ main()
 .then( res => console.log("mongo connection successful"))
 .catch( err => console.log(err));
 
-app.get("/", (req,res) => res.send("Landing Page"));
+app.get("/", (req,res) => res.redirect("/listings"));
 
 app.use("/listings", listingRoutes);
 

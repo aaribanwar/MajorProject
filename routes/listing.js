@@ -40,7 +40,23 @@ router.post("/", validateListing, wrapAsync(async (req,res,next) => {
 router.get("/new", (req,res) => {
     console.log("Entered new log");
     res.render("./listings/new.ejs");
-})
+});
+
+//Random ReRouting
+router.get("/random", wrapAsync(async (req, res) => {
+    const listing = await Listing.aggregate([
+        { $sample: { size: 1 } }
+    ]);
+
+    if (!listing.length) {
+        // No listings exist
+        return res.redirect("/");
+    }
+
+    res.redirect(`/listings/${listing[0]._id}`);
+}));
+
+
 
 
 router.get("/:id", wrapAsync(async (req,res) => {
@@ -57,12 +73,27 @@ router.get("/:id/edit", wrapAsync(async (req,res) => {
     res.render("./listings/edit.ejs",{listing: listing});
 }));
 
-router.put("/:id", validateListing, wrapAsync(async (req,res) => {
-    let {id} = req.params;
-    let {title, description, price} = req.body;
-    await Listing.findByIdAndUpdate(id, {title: title, description: description, price: price})
+
+// router.put("/:id", validateListing, wrapAsync(async (req,res) => {
+//     let {id} = req.params;
+//     let {title, description, price} = req.body;
+//     await Listing.findByIdAndUpdate(id, {title: title, description: description, price: price})
+//     res.redirect(`/listings/${id}`);
+// }));
+
+router.put("/:id", validateListing, wrapAsync(async (req, res) => {
+    const { id } = req.params;
+
+    // If user clears image URL, keep existing image
+    if (!req.body.listing.image?.url) {
+        delete req.body.listing.image;
+    }
+
+    await Listing.findByIdAndUpdate(id, req.body.listing);
+
     res.redirect(`/listings/${id}`);
 }));
+
 
 
 
@@ -75,9 +106,11 @@ router.delete("/:id", wrapAsync(async (req,res) => {
 }));
 
 //REVIEWSSSSSS
-router.post("/:id/reviews", wrapAsync(async (err,req,res,next) => {
+router.post("/:id/reviews", wrapAsync(async (req, res) => {
     const review = new Review(req.body.review);
-}))
+    await review.save();
+    res.redirect(`/listings/${req.params.id}`);
+}));
 
 
 module.exports = router;

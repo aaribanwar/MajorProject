@@ -1,26 +1,105 @@
 <% layout("/layouts/boilerplate.ejs") %>
 
-<body>
-    <div class="form-card">
-        <form action="/listings/<%=listing._id%>?_method=PUT" novalidate method="post" class="needs-validation">
-        Edit Title
-        <input type="text" value="<%=listing.title%>" name="title" required class="form-control">
-        <div class="invalid-feedback">Title is required</div>
-        Edit description
-        <br>
-        <textarea name="description" id="description" required class="form-control"><%=listing.description  %></textarea>
-        edit price
-        <input type="text" placeholder="&#8377;<%=listing.price  %>" name="price" required class="form-control"> 
-        <img src="<%=listing.image.url%>" alt="<%=listing.image.filename%>"> 
-        <h1>new image option coming soon</h1>
-        <button>submit</button>
-        </form>
+<main>
+  <div class="form-card">
 
-        <form action="/listings/<%=listing._id%>?_method=DELETE" method="post">
-            <button>delete</button>
+    <form
+      action="/listings/<%= listing._id %>?_method=PUT"
+      method="POST"
+      novalidate
+      class="needs-validation"
+    >
 
-        </form>
+      <!-- TITLE -->
+      <label>Edit Title</label>
+      <input
+        type="text"
+        name="listing[title]"
+        value="<%= listing.title %>"
+        required
+        class="form-control"
+      >
+      <div class="invalid-feedback">Title is required</div>
 
+      <!-- DESCRIPTION -->
+      <label>Edit Description</label>
+      <textarea
+        name="listing[description]"
+        required
+        class="form-control"
+      ><%= listing.description %></textarea>
+        <div class="invalid-feedback">Description is required</div>
+      <!-- PRICE -->
+      <label>Edit Price</label>
+      <input
+        type="number"
+        name="listing[price]"
+        value="<%= listing.price %>"
+        min="0"
+        required
+        class="form-control"
+      >
+      <div class="invalid-feedback">Price is required</div>
 
-    </div>
-</body>
+      <!-- LOCATION -->
+      <label>Edit Location</label>
+      <input
+        type="text"
+        name="listing[location]"
+        value="<%= listing.location %>"
+        required
+        class="form-control"
+      >
+      <div class="invalid-feedback">Location is required</div>
+
+      <!-- COUNTRY -->
+      <label>Edit Country</label>
+      <input
+        type="text"
+        name="listing[country]"
+        value="<%= listing.country %>"
+        required
+        class="form-control"
+      >
+      <div class="invalid-feedback">country is required</div>
+
+      <!-- CURRENT IMAGE -->
+      <label>Current Image</label>
+      <img
+        src="<%= listing.image.url %>"
+        alt="<%= listing.image.filename %>"
+        style="max-width: 200px; display: block; margin-bottom: 1rem;"
+      >
+
+      <!-- IMAGE URL -->
+      <label>New Image URL</label>
+      <input
+        type="text"
+        name="listing[image][url]"
+        value="<%= listing.image.url %>"
+        class="form-control"
+      >
+
+      <!-- IMAGE FILENAME -->
+      <label>Image Filename</label>
+      <input
+        type="text"
+        name="listing[image][filename]"
+        value="<%= listing.image.filename %>"
+        class="form-control"
+      >
+
+      <button type="submit">Update Listing</button>
+    </form>
+
+    <!-- DELETE -->
+    <form
+      action="/listings/<%= listing._id %>?_method=DELETE"
+      method="POST"
+      style="margin-top: 1rem;"
+    >
+      <button type="submit">Delete</button>
+    </form>
+
+  </div>
+</main>
