@@ -17,6 +17,7 @@ app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));
 app.use(express.static(path.join(__dirname,"/public")));
 app.use(express.urlencoded({extended: true }));
+app.use(express.json()); //new add
 app.use(methodOverride("_method"));
 app.engine('ejs', ejsMate);
 
@@ -32,6 +33,13 @@ app.get("/", (req,res) => res.redirect("/listings"));
 
 app.use("/listings", listingRoutes);
 
+//URL REVEALEER
+//TEMP
+app.use((req, res, next) => {
+    console.log("REQUEST:", req.method, req.originalUrl);
+    next();
+});
+
 
 app.all("*", (req,res,next) => {
     next(new ExpressError(404, "PAGEEE NOTTT FOUNDDDD"));
@@ -39,10 +47,15 @@ app.all("*", (req,res,next) => {
 //ERROR Handler
 app.use((err,req,res,next) => {
     let {status=500, message="Default Error" } = err;
-    console.log("Error handler in app.js activated");
+    console.log("Error handler in app.js activated, app.use wala below is the status and message");
+    console.log("STATUS:", status);
+    console.log("MESSAGE:", message);
     res.render("./listings/error.ejs",{err:err});
     //res.status(status).send(message);
 });
+
+
+
 
 app.listen(port, () => {
     console.log(`listening at port: ${port}`);

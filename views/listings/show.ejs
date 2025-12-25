@@ -24,21 +24,46 @@
     </div>
 
 <!-- review creation form -->
-<div class="card mb-3 ">
+<div class="card mb-3">
     <h3>Add A Review</h3>
-    <div class = "form-card">
-        <form action="/listings/<%=listing._id%>/reviews" method="POST" novalidate class="needs-validation">
-        <label for="rating">Rating</label>
-        <input type="range" min="1" max="5" id="rating" name="review[rating]">
-    </div>
-    <div>
-        <label for="comment">Comment</label>
-        <textarea name="review[comment]" id="comment" rows="5"></textarea>
-    </div>
-    <button>Submit</button>
+
+    <form action="/listings/<%= listing._id %>/reviews"
+          method="POST"
+          novalidate
+          class="needs-validation">
+
+        <div class="form-card">
+            <label for="rating">Rating</label>
+            <input
+                type="range"
+                min="1"
+                max="5"
+                id="rating"
+                name="review[rating]"
+                class="form-control"
+                required>
+        </div>
+
+        <div>
+            <label for="comment">Comment</label>
+            <textarea
+                name="review[comment]"
+                id="comment"
+                rows="5"
+                class="form-control"
+                required></textarea>
+            <div class="invalid-feedback">
+                Comment is required.
+            </div>
+        </div>
+
+        <button type="submit">Submit</button>
     </form>
 </div>
 
 
+
 </div>
 </main>
+
+

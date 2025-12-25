@@ -3,8 +3,9 @@ const router = express.Router();
 const Listing = require("../models/listing");
 const wrapAsync = require("../utils/wrapAsync");
 const ExpressError = require("../utils/ExpressError");
-const listingSchema = require("../schema.js");
+const { listingSchema, reviewSchema } = require("../schema.js");
 
+//CHECK IF REQUIRED IS CORRECT
 //new reviews
 const Review = require("../models/review");
 
@@ -15,9 +16,10 @@ router.get("/", wrapAsync(async (req, res) => {
     res.render("listings/index.ejs",{listings: listings});
 }));
 
+//VALIDATION MIDDLEWARES
 const validateListing = (req,res,next) => {
     let {error} = listingSchema.validate(req.body);
-    console.log("validating the schema");
+    console.log("validating the schema of lisitng");
     if( error ) {
         let errorMessage = error.details.map(
             element => element.message
@@ -25,9 +27,25 @@ const validateListing = (req,res,next) => {
         throw new ExpressError(400,errorMessage);
     } else {
         next();
-    }
-    
-}
+    }  
+};
+
+//MIDDLEWARE REVIEWS VALIDATION
+const validateReview = (req,res,next) => {
+    console.log("FIRst line in validateReview");
+    let {error} = reviewSchema.validate(req.body);
+    console.log("validating the schema of review");
+    if( error ) {
+        let errorMessage = error.details.map(
+            element => element.message
+        ).join(", ");
+        throw new ExpressError(400,errorMessage);
+    } else {
+        console.log("Review validation passed");
+        next();
+    }  
+};
+
 
 //post new
 router.post("/", validateListing, wrapAsync(async (req,res,next) => {
@@ -107,11 +125,18 @@ router.delete("/:id", wrapAsync(async (req,res) => {
 
 //REVIEWSSSSSS
 //posting to the id
-router.post("/:id/reviews", wrapAsync(async (req, res) => {
+router.post("/:id/reviews", validateReview,  wrapAsync(async (req, res) => {
 
     console.log("We are in post");
     //access the listing
     let listing = await Listing.findById(req.params.id);
+    console.log("RAW ID PARAM:", req.params.id);
+
+    //console.log(listing);
+
+    if( !listing ){
+         throw new ExpressError(400, "Listing does not exist lol");
+    }
 
     let newReview = new Review(req.body.review);
 
@@ -123,11 +148,12 @@ router.post("/:id/reviews", wrapAsync(async (req, res) => {
     await newReview.save();
     console.log("New reivew saved");
     //res.send("New review has been saved");
-    res.redirect(`/listings/${req.params.id}`);
+   res.redirect(303, `/listings/${req.params.id}`);
+
 }));
 
 //REVIEW GET FOR ONE
-router.get(":/id/reviews", wrapAsync( async (req,res) => {
+router.get("/:id/reviews", wrapAsync( async (req,res) => {
     res.send("THIS WILL SHOW ALL THE REVIEWS");
 }))
 
