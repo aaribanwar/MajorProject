@@ -1,16 +1,17 @@
 const mongoose = require("mongoose");
 
- async function main(){
-    await mongoose.connect("mongodb://127.0.0.1:27017/airbnb");
-}
+//  async function main(){
+//     await mongoose.connect("mongodb://127.0.0.1:27017/airbnb");
+// }
 
-main()
-.then(res => console.log("review mongoose connected"))
-.catch(err => console.log(err));
+// main()
+// .then(res => console.log("review mongoose connected"))
+// .catch(err => console.log(err));
 
 const reviewSchema = new mongoose.Schema({
-    content: {
-        type: String
+    comment: {
+        type: String,
+        required: true
     },
     rating: {
         type: Number,
@@ -20,7 +21,7 @@ const reviewSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now()
+        default: Date.now
     }
 });
 

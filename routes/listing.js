@@ -17,7 +17,7 @@ router.get("/", wrapAsync(async (req, res) => {
 
 const validateListing = (req,res,next) => {
     let {error} = listingSchema.validate(req.body);
-    console.log("sdkjvbduvbdsuovbduvbdubcdocbCHECK");
+    console.log("validating the schema");
     if( error ) {
         let errorMessage = error.details.map(
             element => element.message
@@ -106,11 +106,30 @@ router.delete("/:id", wrapAsync(async (req,res) => {
 }));
 
 //REVIEWSSSSSS
+//posting to the id
 router.post("/:id/reviews", wrapAsync(async (req, res) => {
-    const review = new Review(req.body.review);
-    await review.save();
+
+    console.log("We are in post");
+    //access the listing
+    let listing = await Listing.findById(req.params.id);
+
+    let newReview = new Review(req.body.review);
+
+    //push the new review
+    listing.reviews.push(newReview._id); // ✅
+    await listing.save(); 
+
+
+    await newReview.save();
+    console.log("New reivew saved");
+    //res.send("New review has been saved");
     res.redirect(`/listings/${req.params.id}`);
 }));
+
+//REVIEW GET FOR ONE
+router.get(":/id/reviews", wrapAsync( async (req,res) => {
+    res.send("THIS WILL SHOW ALL THE REVIEWS");
+}))
 
 
 module.exports = router;
