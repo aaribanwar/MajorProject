@@ -64,6 +64,31 @@
 
 
 </div>
+
+
+
+<!-- SHOWING REVIEWS BELOW -->
+
+ <div class="all-listings">
+    <% for (review of listing.reviews) { %>
+    <!-- <a href="/listings/<%=listing.id%>/reviews/<%=review.id%>"></a> -->
+
+    <div class="card mb-3">
+        <h1>Rating: <%=review.rating%></h1>
+        <p>Comment: <%=review.comment%></p>
+
+    <form action="/listings/<%=listing._id%>/reviews/<%=review._id %>?_method=DELETE" method="post">
+        <button>delete</button>
+    </form>
+
+    </div>
+
+    
+
+    <% } %>
+    </div>
+
+
 </main>
 
 

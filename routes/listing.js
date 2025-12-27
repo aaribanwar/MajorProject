@@ -79,7 +79,8 @@ router.get("/random", wrapAsync(async (req, res) => {
 
 router.get("/:id", wrapAsync(async (req,res) => {
     let {id} = req.params;
-    let listing = await Listing.findById(id);
+    let listing = await Listing.findById(id).populate("reviews");
+    
     res.render("listings/show.ejs",{listing: listing});
 }));
 
@@ -119,7 +120,13 @@ router.put("/:id", validateListing, wrapAsync(async (req, res) => {
 //delete
 router.delete("/:id", wrapAsync(async (req,res) => {
     let {id} = req.params;
+    const listing = await Listing.findById(id);
+    for (const reviewId of listing.reviews) {
+    await Review.findByIdAndDelete(reviewId);
+}
+
     await Listing.findByIdAndDelete(id);
+
     res.redirect("/listings");
 }));
 
@@ -148,14 +155,32 @@ router.post("/:id/reviews", validateReview,  wrapAsync(async (req, res) => {
     await newReview.save();
     console.log("New reivew saved");
     //res.send("New review has been saved");
-   res.redirect(303, `/listings/${req.params.id}`);
-
+    res.redirect(`/listings/${req.params.id}`);
 }));
 
 //REVIEW GET FOR ONE
 router.get("/:id/reviews", wrapAsync( async (req,res) => {
-    res.send("THIS WILL SHOW ALL THE REVIEWS");
-}))
+
+     let listing = await Listing.findById(req.params.id).populate("reviews");
+     console.log(listing);
+     let reviews = listing.reviews;
+     for( let review of reviews){
+        console.log(review.comment);
+        console.log(review.rating);
+        console.log(review.id);
+     }
+    res.send("get is working");
+    //res.send("listings/index.ejs",{listings: listings});
+}));
+
+router.delete("/:id/reviews/:reviewId" , wrapAsync( async ( req, res) => {
+
+    await Review.findByIdAndDelete(req.params.reviewId);
+    await Listing.findByIdAndUpdate(req.params.id, {$pull:{ reviews: req.params.reviewId }} );
+    
+   res.redirect(`/listings/${req.params.id}`);
+
+}));
 
 
 module.exports = router;

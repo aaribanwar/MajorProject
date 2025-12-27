@@ -1,0 +1,17 @@
+//delete
+router.delete("/:id", wrapAsync(async (req,res) => {
+    let {id} = req.params;
+    await Listing.findByIdAndDelete(id);
+    res.redirect("/listings");
+}));
+
+
+
+router.delete("/:id/reviews/:reviewId" , wrapAsync( async ( req, res) => {
+
+    await Review.findByIdAndDelete(req.params.reviewId);
+    await Listing.findByIdAndUpdate(req.params.id, {$pull:{ reviews: req.params.reviewId }} );
+    
+   res.redirect(`/listings/${req.params.id}`);
+
+}));
