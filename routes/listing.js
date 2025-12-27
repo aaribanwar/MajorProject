@@ -120,10 +120,10 @@ router.put("/:id", validateListing, wrapAsync(async (req, res) => {
 //delete
 router.delete("/:id", wrapAsync(async (req,res) => {
     let {id} = req.params;
-    const listing = await Listing.findById(id);
-    for (const reviewId of listing.reviews) {
-    await Review.findByIdAndDelete(reviewId);
-}
+//     const listing = await Listing.findById(id);
+//     for (const reviewId of listing.reviews) {
+//     await Review.findByIdAndDelete(reviewId);
+// }
 
     await Listing.findByIdAndDelete(id);
 

@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const Review = require("./review"); // adjust path as needed
+
 const { Schema } = mongoose;
 
 const defaultImage = {
@@ -49,6 +51,13 @@ const listingSchema = new Schema({
             ref: "Review"
         }
     ]
+});
+
+listingSchema.post("findOneAndDelete", async (listing) => {
+    if(listing) {
+        console.log("In cascade of delete from review");
+        await Review.deleteMany( { _id: { $in : listing.reviews }});
+    }
 });
 
 module.exports = mongoose.model("Listing", listingSchema);
