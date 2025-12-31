@@ -6,6 +6,8 @@ const ExpressError = require("../utils/ExpressError");
 const { listingSchema, reviewSchema } = require("../schema.js");
 const connectFlash = require("connect-flash");
 
+//
+
 //CHECK IF REQUIRED IS CORRECT
 //new reviews
 const Review = require("../models/review");
@@ -49,7 +51,8 @@ router.post("/", validateListing, wrapAsync(async (req,res,next) => {
 }
 ));
 router.get("/new", (req,res) => {
-    console.log("Entered new log");
+    
+
     res.render("./listings/new.ejs");
 });
 

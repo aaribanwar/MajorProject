@@ -9,12 +9,22 @@ const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync");
 const ExpressError = require("./utils/ExpressError");
 const listingSchema = require("./schema.js");
+
+//userSchema and user router
+const userRoutes = require("./routes/user.js");
+const User = require("./models/user.js");
+
+
 //cookie parser
 const cookieParser = require("cookie-parser");
 //session
 const session = require('express-session')
 //connect flash
 const connectFlash = require("connect-flash");
+
+//passport
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
 
 
 
@@ -63,6 +73,24 @@ app.use(express.json()); //new add
 app.use(methodOverride("_method"));
 app.engine('ejs', ejsMate);
 
+//passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+//passport serilase
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
+//debugging fn
+app.use((req, res, next) => {
+  console.log("INCOMING:", req.method, req.originalUrl);
+  next();
+});
+
+
 async function main(){
     await mongoose.connect("mongodb://127.0.0.1:27017/airbnb");
 }
@@ -91,6 +119,9 @@ app.use("/listings", listingRoutes);
 
 //new route added
 app.use("/listings/:id/reviews", reviewRoutes);
+
+//four user
+app.use("/users",userRoutes);
 
 //URL REVEALEER, FOR DEV TESTING
 //TEMP

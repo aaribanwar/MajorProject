@@ -6,6 +6,10 @@ body {
     box-sizing: border-box;
 }
 
+.container {
+    flex: 1;
+}
+
 /* Container for all cards */
 .all-listings {
     background-color: azure;

@@ -1,0 +1,32 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+<main>
+    <h1>Login in with Registered User</h1>
+    <div class="form-card">
+        <form action="/users/login" method="POST" novalidate class="needs-validation">
+
+            <div class="form-group">
+                <div class="mb-2 w-100">
+                    <input type="text" class="form-control" placeholder="Enter username" name="username" required>
+                    <div class="invalid-feedback">username is required.</div>
+                </div>
+                <!-- <div class="mb-2 w-100">
+                    <input type="text" class="form-control" placeholder="Enter email" name="email" required>
+                    <div class="invalid-feedback">email is required.</div>
+                </div> -->
+            </div>
+            
+            <div class="form-group">
+                <input type="password" class="form-control" name="password" id="password" rows="5" required placeholder="Enter password..."></input>
+                <div class="invalid-feedback">password is required.</div>
+            </div>
+
+
+            <div class="form-group">
+                <button class="btn btn-primary mt-3">Submit</button>
+            </div> 
+        </form>
+    </div>
+   
+</main>
+
