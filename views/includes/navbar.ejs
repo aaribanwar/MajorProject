@@ -8,11 +8,17 @@
         <div class="navbar-nav">
           <a class="nav-link" href="/listings">Home</a>
           <a class="nav-link" href="/listings/new">Add new listings</a>
-         
           <a class="nav-link" href="/listings/random">Random</a>
+          </div>
 
+          <div class="navbar-nav ms-auto">
+            <% if(!currUser) { %>
           <a class="nav-link" href="/users/signup">Signup</a>
           <a class="nav-link" href="/users/login">Login</a>
+          <% } %>
+          <% if(currUser) { %>
+          <a class="nav-link" href="/users/logout">!Logout!</a>
+          <% } %>
          
         </div>
       </div>

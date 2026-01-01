@@ -5,6 +5,8 @@ const wrapAsync = require("../utils/wrapAsync");
 const ExpressError = require("../utils/ExpressError");
 const passport = require("passport");
 
+const { isAuth, redirectUrl } = require("../utils/middlewares");
+
 
 
 //JOI Schema ??
@@ -45,8 +47,15 @@ router.post(
     const newUser = new User({username, email});
     const registeredUser = await User.register(newUser, password);
     console.log(registeredUser);
-    req.flash("success", "Signup was successful");
-    res.redirect("/listings");
+    req.login(registeredUser, (e) => {
+        if(e){
+            return next(e);
+        }
+        console.log("login after sinup automatic");
+         req.flash("success", "Welcome New User :)");
+        res.redirect("/listings");
+    });
+   
 }
 catch(err) {
     req.flash("error",err.message);
@@ -60,12 +69,13 @@ router.get("/login",
      wrapAsync( 
         async ( req, res) =>
              {
+
                 res.render("./users/login.ejs");
             }
 )
 );
 
-router.post("/login", passport.authenticate("local",
+router.post("/login",redirectUrl,  passport.authenticate("local",
     {
         failureRedirect: "/users/login",
         failureFlash: true
@@ -76,9 +86,22 @@ wrapAsync(
     {
        
         req.flash("success","Welcome, you have logged in :)");
-        res.redirect("/listings");
+        
+        const URL = res.locals.redirectUrl || "/listings";
+        res.redirect(URL);
     }
-))
+));
+
+router.get("/logout", (req,res, next) => 
+    {
+        req.logout( (err) => {
+            if(err){
+            return next(err);
+            }
+            req.flash("success","you have logged out");
+            res.redirect("/listings");
+        })
+})
 
 
 module.exports = router;

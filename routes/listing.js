@@ -6,7 +6,12 @@ const ExpressError = require("../utils/ExpressError");
 const { listingSchema, reviewSchema } = require("../schema.js");
 const connectFlash = require("connect-flash");
 
-//
+//require middleware utility
+const { isAuth } = require("../utils/middlewares.js");
+
+//passport
+const passport = require("passport");
+
 
 //CHECK IF REQUIRED IS CORRECT
 //new reviews
@@ -37,7 +42,7 @@ const validateListing = (req,res,next) => {
 
 
 //post new
-router.post("/", validateListing, wrapAsync(async (req,res,next) => {
+router.post("/", isAuth, validateListing, wrapAsync(async (req,res,next) => {
     
     const listing = new Listing(req.body.listing);
     await listing.save();
@@ -50,9 +55,12 @@ router.post("/", validateListing, wrapAsync(async (req,res,next) => {
     res.redirect("/listings");
 }
 ));
-router.get("/new", (req,res) => {
-    
 
+
+router.get("/new", isAuth, (req,res) => {
+    
+   
+    console.log("Auth check for new succeeded");
     res.render("./listings/new.ejs");
 });
 
@@ -90,7 +98,7 @@ router.get("/:id", wrapAsync(async (req,res) => {
 
 
 //Editing
-router.get("/:id/edit", wrapAsync(async (req,res) => {
+router.get("/:id/edit", isAuth, wrapAsync(async (req,res) => {
     let {id} = req.params;
     let listing = await Listing.findById(id);
 
@@ -135,7 +143,7 @@ router.put("/:id", validateListing, wrapAsync(async (req, res) => {
 
 
 //delete
-router.delete("/:id", wrapAsync(async (req,res) => {
+router.delete("/:id", isAuth, wrapAsync(async (req,res) => {
     let {id} = req.params;
 //     const listing = await Listing.findById(id);
 //     for (const reviewId of listing.reviews) {

@@ -3,15 +3,14 @@ const mongoose = require("mongoose");
 const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
-const listingRoutes = require("./routes/listing");
-const reviewRoutes = require("./routes/review");
+
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utils/wrapAsync");
 const ExpressError = require("./utils/ExpressError");
 const listingSchema = require("./schema.js");
 
 //userSchema and user router
-const userRoutes = require("./routes/user.js");
+
 const User = require("./models/user.js");
 
 
@@ -54,6 +53,16 @@ app.use(session(
     sessionOptions
 ));
 
+
+//getting routes
+const listingRoutes = require("./routes/listing");
+const reviewRoutes = require("./routes/review");
+const userRoutes = require("./routes/user.js");
+
+//passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
 //middleware for flash
 app.use( connectFlash());
 //setting up the flash messages
@@ -61,6 +70,7 @@ app.use( connectFlash());
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  res.locals.currUser = req.user;
   next();
 });
 
@@ -73,9 +83,7 @@ app.use(express.json()); //new add
 app.use(methodOverride("_method"));
 app.engine('ejs', ejsMate);
 
-//passport middleware
-app.use(passport.initialize());
-app.use(passport.session());
+
 
 
 //passport serilase

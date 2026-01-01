@@ -6,6 +6,8 @@ const wrapAsync = require("../utils/wrapAsync");
 const ExpressError = require("../utils/ExpressError");
 const { listingSchema, reviewSchema } = require("../schema.js");
 
+//middleware for login
+const {isAuth } = require("../utils/middlewares.js");
 
 //MIDDLEWARE REVIEWS VALIDATION
 const validateReview = (req,res,next) => {
@@ -25,7 +27,7 @@ const validateReview = (req,res,next) => {
 
 //REVIEWSSSSSS
 //posting to the id
-router.post("/", validateReview,  wrapAsync(async (req, res) => {
+router.post("/", isAuth,  wrapAsync(async (req, res) => {
 
     console.log("We are in post");
     //access the listing
@@ -52,22 +54,22 @@ router.post("/", validateReview,  wrapAsync(async (req, res) => {
     res.redirect(`/listings/${req.params.id}`);
 }));
 
-//REVIEW GET FOR ONE
-router.get("/", wrapAsync( async (req,res) => {
+// //REVIEW GET FOR ONE
+// router.get("/", wrapAsync( async (req,res) => {
 
-     let listing = await Listing.findById(req.params.id).populate("reviews");
-     console.log(listing);
-     let reviews = listing.reviews;
-     for( let review of reviews){
-        console.log(review.comment);
-        console.log(review.rating);
-        console.log(review.id);
-     }
-    res.send("get is working");
-    //res.send("listings/index.ejs",{listings: listings});
-}));
+//      let listing = await Listing.findById(req.params.id).populate("reviews");
+//      console.log(listing);
+//      let reviews = listing.reviews;
+//      for( let review of reviews){
+//         console.log(review.comment);
+//         console.log(review.rating);
+//         console.log(review.id);
+//      }
+//     res.send("get is working");
+//     //res.send("listings/index.ejs",{listings: listings});
+// }));
 
-router.delete("/:reviewId" , wrapAsync( async ( req, res) => {
+router.delete("/:reviewId" , isAuth, wrapAsync( async ( req, res) => {
 
     await Review.findByIdAndDelete(req.params.reviewId);
     await Listing.findByIdAndUpdate(req.params.id, {$pull:{ reviews: req.params.reviewId }} );
