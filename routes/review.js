@@ -7,41 +7,31 @@ const ExpressError = require("../utils/ExpressError");
 const { listingSchema, reviewSchema } = require("../schema.js");
 
 //middleware for login
-const {isAuth } = require("../utils/middlewares.js");
+const {isAuth,  validateReview, isOwner} = require("../utils/middlewares.js");
 
-//MIDDLEWARE REVIEWS VALIDATION
-const validateReview = (req,res,next) => {
-    console.log("FIRst line in validateReview");
-    let {error} = reviewSchema.validate(req.body);
-    console.log("validating the schema of review");
-    if( error ) {
-        let errorMessage = error.details.map(
-            element => element.message
-        ).join(", ");
-        throw new ExpressError(400,errorMessage);
-    } else {
-        console.log("Review validation passed");
-        next();
-    }  
-};
+
 
 //REVIEWSSSSSS
+
+router.get("/", (req, res) => {
+    res.redirect(`/listings/${req.params.id}`);
+});
+
 //posting to the id
-router.post("/", isAuth,  wrapAsync(async (req, res) => {
+router.post("/", isAuth, validateReview,  wrapAsync(async (req, res) => {
 
     console.log("We are in post");
     //access the listing
     let listing = await Listing.findById(req.params.id);
     console.log("RAW ID PARAM:", req.params.id);
 
-    //console.log(listing);
-
     if( !listing ){
          throw new ExpressError(400, "Listing does not exist lol");
     }
 
     let newReview = new Review(req.body.review);
-
+    newReview.owner = req.user._id;
+    console.log(newReview);
     //push the new review
     listing.reviews.push(newReview._id); // ✅
     await listing.save(); 
@@ -50,26 +40,11 @@ router.post("/", isAuth,  wrapAsync(async (req, res) => {
     await newReview.save();
     console.log("New reivew saved");
     req.flash("success","New RRREEEVIVIIWWWW SAVEDD");
-    //res.send("New review has been saved");
     res.redirect(`/listings/${req.params.id}`);
 }));
 
-// //REVIEW GET FOR ONE
-// router.get("/", wrapAsync( async (req,res) => {
 
-//      let listing = await Listing.findById(req.params.id).populate("reviews");
-//      console.log(listing);
-//      let reviews = listing.reviews;
-//      for( let review of reviews){
-//         console.log(review.comment);
-//         console.log(review.rating);
-//         console.log(review.id);
-//      }
-//     res.send("get is working");
-//     //res.send("listings/index.ejs",{listings: listings});
-// }));
-
-router.delete("/:reviewId" , isAuth, wrapAsync( async ( req, res) => {
+router.delete("/:reviewId" , isAuth, isOwner, wrapAsync( async ( req, res) => {
 
     await Review.findByIdAndDelete(req.params.reviewId);
     await Listing.findByIdAndUpdate(req.params.id, {$pull:{ reviews: req.params.reviewId }} );
@@ -80,3 +55,6 @@ router.delete("/:reviewId" , isAuth, wrapAsync( async ( req, res) => {
 
 module.exports = router;
 //route is : /:id/reviews
+
+
+//where is validatereviews used

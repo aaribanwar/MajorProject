@@ -108,18 +108,18 @@ main()
 .catch( err => console.log(err));
 
 
-//testing the session
-app.get("/test", (req,res) => {
+// //testing the session
+// app.get("/test", (req,res) => {
    
-     if( req.session.count){
-        req.session.count++;
-    }
-    else{
-         req.session.count = 1;
-    }
-    res.send(`testing for session will be done, count is: ${req.session.count}`);
+//      if( req.session.count){
+//         req.session.count++;
+//     }
+//     else{
+//          req.session.count = 1;
+//     }
+//     res.send(`testing for session will be done, count is: ${req.session.count}`);
    
-})
+// })
 
 app.get("/", (req,res) => res.redirect("/listings"));
 
@@ -142,16 +142,35 @@ app.use((req, res, next) => {
 
 app.all("*", (req,res,next) => {
     //implement print of what was not found
+     console.log("❌ 404 NOT FOUND");
+    console.log({
+        method: req.method,
+        path: req.originalUrl,
+        params: req.params,
+        query: req.query
+    });
     next(new ExpressError(404, "PAGEEE NOTTT FOUNDDDD"));
 });
 //ERROR Handler
-app.use((err,req,res,next) => {
-    let {status=500, message="Default Error" } = err;
-    console.log("Error handler in app.js activated, app.use wala below is the status and message");
+app.use((err, req, res, next) => {
+    const { status = 500, message = "Something went wrong" } = err;
+
+    console.log("Error handler activated");
     console.log("STATUS:", status);
     console.log("MESSAGE:", message);
-    res.render("./listings/error.ejs",{err:err});
-    //res.status(status).send(message);
+
+    // API clients (Thunder, Postman, fetch)
+    if (req.accepts("json")) {
+        // Browser clients
+    return res.status(status).render("./listings/error.ejs", { err });
+    }
+
+
+    //json
+     return res.status(status).json({
+            error: message
+        });
+   
 });
 
 

@@ -13,6 +13,11 @@
         <h5>&#8377;<%=listing.price%></h5>
         <h5><%=listing.location  %></h5>
         <h6><%=listing.country  %></h6>
+        <hr>
+        <h6 class="fst-italic fw-bold">Username: <%=listing.owner.username  %></h6>
+
+<!-- only show if logged in -->
+ <% if( currUser && listing.owner.equals(currUser)) {%>
     <div class="button-container">
         <form action="/listings/<%=listing._id  %>/edit">
             <button>Edit</button>
@@ -22,11 +27,19 @@
         <button>delete</button>
     </form>
     </div>
+    <% } %>
+
+
     </div>
 
 <!-- review creation form -->
 <div class="card mb-3">
+    <% if( currUser) { %>
     <h3>Add A Review</h3>
+    <% } %>
+    <% if( !currUser) { %>
+        <h3>Login to Add the Review</h3>
+        <% } %>
 
     <form action="/listings/<%= listing._id %>/reviews"
           method="POST"
@@ -58,7 +71,9 @@
             </div>
         </div>
 
+         <% if( currUser) { %>
         <button type="submit">Submit</button>
+        <% } %>
     </form>
 </div>
 
@@ -77,10 +92,17 @@
     <div class="card mb-3">
         <h1>Rating: <%=review.rating%></h1>
         <p>Comment: <%=review.comment%></p>
+         <p>Owner: <%=review.owner.username%></p>
 
+
+         <!-- delete button only if same user -->
+         
+
+    <% if( currUser && review.owner.equals(currUser._id)) {%>
     <form action="/listings/<%=listing._id%>/reviews/<%=review._id %>?_method=DELETE" method="post">
         <button>delete</button>
     </form>
+    <% } %>
 
     </div>
 

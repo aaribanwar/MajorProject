@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-
+const { Schema } = mongoose;
+const User = require("./user");
 //  async function main(){
 //     await mongoose.connect("mongodb://127.0.0.1:27017/airbnb");
 // }
@@ -18,6 +19,10 @@ const reviewSchema = new mongoose.Schema({
         min: 1,
         max: 5,
         required: true
+    },
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
     },
     createdAt: {
         type: Date,

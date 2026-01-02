@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Review = require("./review"); // adjust path as needed
-
+const User = require("./user");
 const { Schema } = mongoose;
 
 const defaultImage = {
@@ -50,7 +50,11 @@ const listingSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: "Review"
         }
-    ]
+    ],
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    },
 });
 
 listingSchema.post("findOneAndDelete", async (listing) => {

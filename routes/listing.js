@@ -7,7 +7,7 @@ const { listingSchema, reviewSchema } = require("../schema.js");
 const connectFlash = require("connect-flash");
 
 //require middleware utility
-const { isAuth } = require("../utils/middlewares.js");
+const { isAuth, validateListing, isOwner} = require("../utils/middlewares.js");
 
 //passport
 const passport = require("passport");
@@ -25,26 +25,17 @@ router.get("/", wrapAsync(async (req, res) => {
     res.render("listings/index.ejs",{listings: listings});
 }));
 
-//VALIDATION MIDDLEWARES
-const validateListing = (req,res,next) => {
-    let {error} = listingSchema.validate(req.body);
-    console.log("validating the schema of lisitng");
-    if( error ) {
-        let errorMessage = error.details.map(
-            element => element.message
-        ).join(", ");
-        throw new ExpressError(400,errorMessage);
-    } else {
-        next();
-    }  
-};
 
 
 
 //post new
 router.post("/", isAuth, validateListing, wrapAsync(async (req,res,next) => {
     
-    const listing = new Listing(req.body.listing);
+    let listing = new Listing(req.body.listing);
+    listing.owner = req.user._id;
+    
+
+    
     await listing.save();
     if( listing) {
     req.flash("success", "New listing created successfully! :)");
@@ -84,7 +75,13 @@ router.get("/random", wrapAsync(async (req, res) => {
 
 router.get("/:id", wrapAsync(async (req,res) => {
     let {id} = req.params;
-    let listing = await Listing.findById(id).populate("reviews");
+    let listing = await Listing.findById(id).populate(
+        {
+        path: "reviews",
+        populate: { path: "owner"},
+        }
+        ).populate("owner");
+   
     if( listing ){
         req.flash("success", "listing exists! yayyy");
     }
@@ -98,7 +95,7 @@ router.get("/:id", wrapAsync(async (req,res) => {
 
 
 //Editing
-router.get("/:id/edit", isAuth, wrapAsync(async (req,res) => {
+router.get("/:id/edit", isAuth, isOwner,  wrapAsync(async (req,res) => {
     let {id} = req.params;
     let listing = await Listing.findById(id);
 
@@ -114,41 +111,47 @@ router.get("/:id/edit", isAuth, wrapAsync(async (req,res) => {
 }));
 
 
-// router.put("/:id", validateListing, wrapAsync(async (req,res) => {
-//     let {id} = req.params;
-//     let {title, description, price} = req.body;
-//     await Listing.findByIdAndUpdate(id, {title: title, description: description, price: price})
-//     res.redirect(`/listings/${id}`);
-// }));
+router.put(
+    "/:id", isAuth, isOwner,
+    validateListing,
+    wrapAsync(async (req, res) => {
+        const { id } = req.params;
 
-router.put("/:id", validateListing, wrapAsync(async (req, res) => {
-    const { id } = req.params;
+        const listing = await Listing.findById(id);
+        if (!listing) {
+            req.flash("error", "Listing not found");
+            return res.redirect("/listings");
+        }
 
-    // If user clears image URL, keep existing image
-    if (!req.body.listing.image?.url) {
-        delete req.body.listing.image;
-    }
+        // if (req.user && !listing.owner.equals(req.user._id)) {
+        //     req.flash("error", "You do not have permission to edit this listing");
+        //     return res.redirect(`/listings/${id}`);
+        // }
 
-   
+        await Listing.findByIdAndUpdate(
+            id,
+            req.body.listing,
+            { runValidators: true }
+        );
 
-    await Listing.findByIdAndUpdate(id, req.body.listing);
-
-  
-     req.flash("success","ID matched and we did the edit");
-    res.redirect(`/listings/${id}`);
-}));
+        req.flash("success", "Listing updated successfully");
+        res.redirect(`/listings/${id}`);
+    })
+);
 
 
 
 
 
 //delete
-router.delete("/:id", isAuth, wrapAsync(async (req,res) => {
+router.delete("/:id", isAuth, isOwner, wrapAsync(async (req,res) => {
     let {id} = req.params;
-//     const listing = await Listing.findById(id);
-//     for (const reviewId of listing.reviews) {
-//     await Review.findByIdAndDelete(reviewId);
-// }
+    let listing = await Listing.findById(id);
+
+      if( ! listing.owner.equals(req.user._id)) {
+        req.flash("error","Error :( ID did not match, you dont have permission");
+        res.redirect(`/listings/${id}`);
+    }
 
     await Listing.findByIdAndDelete(id);
 
@@ -157,76 +160,6 @@ router.delete("/:id", isAuth, wrapAsync(async (req,res) => {
     res.redirect("/listings");
 }));
 
-//REVIEWSSSSSS
-
-
-
-//MIDDLEWARE REVIEWS VALIDATION
-// const validateReview = (req,res,next) => {
-//     console.log("FIRst line in validateReview");
-//     let {error} = reviewSchema.validate(req.body);
-//     console.log("validating the schema of review");
-//     if( error ) {
-//         let errorMessage = error.details.map(
-//             element => element.message
-//         ).join(", ");
-//         throw new ExpressError(400,errorMessage);
-//     } else {
-//         console.log("Review validation passed");
-//         next();
-//     }  
-// };
-
-//posting to the id
-// router.post("/:id/reviews", validateReview,  wrapAsync(async (req, res) => {
-
-//     console.log("We are in post");
-//     //access the listing
-//     let listing = await Listing.findById(req.params.id);
-//     console.log("RAW ID PARAM:", req.params.id);
-
-//     //console.log(listing);
-
-//     if( !listing ){
-//          throw new ExpressError(400, "Listing does not exist lol");
-//     }
-
-//     let newReview = new Review(req.body.review);
-
-//     //push the new review
-//     listing.reviews.push(newReview._id); // ✅
-//     await listing.save(); 
-
-
-//     await newReview.save();
-//     console.log("New reivew saved");
-//     //res.send("New review has been saved");
-//     res.redirect(`/listings/${req.params.id}`);
-// }));
-
-// //REVIEW GET FOR ONE
-// router.get("/:id/reviews", wrapAsync( async (req,res) => {
-
-//      let listing = await Listing.findById(req.params.id).populate("reviews");
-//      console.log(listing);
-//      let reviews = listing.reviews;
-//      for( let review of reviews){
-//         console.log(review.comment);
-//         console.log(review.rating);
-//         console.log(review.id);
-//      }
-//     res.send("get is working");
-//     //res.send("listings/index.ejs",{listings: listings});
-// }));
-
-// router.delete("/:id/reviews/:reviewId" , wrapAsync( async ( req, res) => {
-
-//     await Review.findByIdAndDelete(req.params.reviewId);
-//     await Listing.findByIdAndUpdate(req.params.id, {$pull:{ reviews: req.params.reviewId }} );
-    
-//    res.redirect(`/listings/${req.params.id}`);
-
-// }));
 
 
 module.exports = router;
