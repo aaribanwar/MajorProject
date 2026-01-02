@@ -5,6 +5,7 @@ const wrapAsync = require("../utils/wrapAsync");
 const ExpressError = require("../utils/ExpressError");
 const { listingSchema, reviewSchema } = require("../schema.js");
 const connectFlash = require("connect-flash");
+const listingController = require("../controller/listingController.js");
 
 //require middleware utility
 const { isAuth, validateListing, isOwner} = require("../utils/middlewares.js");
@@ -18,125 +19,52 @@ const passport = require("passport");
 const Review = require("../models/review");
 
 
-router.get("/", wrapAsync(async (req, res) => {
-    let listings = await Listing.find({});
-    //res.send("get is working");
-    
-    res.render("listings/index.ejs",{listings: listings});
-}));
+router.get("/", wrapAsync(
+    listingController.getAll
+));
 
 
 
 
 //post new
-router.post("/", isAuth, validateListing, wrapAsync(async (req,res,next) => {
-    
-    let listing = new Listing(req.body.listing);
-    listing.owner = req.user._id;
-    
-
-    
-    await listing.save();
-    if( listing) {
-    req.flash("success", "New listing created successfully! :)");
-    }
-    else {
-        req.flash("error","New listing was not saved :(");
-    }
-    res.redirect("/listings");
-}
+router.post("/", isAuth, validateListing, wrapAsync(
+    listingController.post
 ));
 
 
-router.get("/new", isAuth, (req,res) => {
-    
-   
-    console.log("Auth check for new succeeded");
-    res.render("./listings/new.ejs");
-});
+router.get("/new", isAuth, 
+   listingController.createForm
+);
 
 //Random ReRouting
-router.get("/random", wrapAsync(async (req, res) => {
-    const listing = await Listing.aggregate([
-        { $sample: { size: 1 } }
-    ]);
-
-    if (!listing.length) {
-        // No listings exist
-        return res.redirect("/");
-    }
-
-    
-    res.redirect(`/listings/${listing[0]._id}`);
-}));
+router.get("/random", wrapAsync( 
+    listingController.random
+));
 
 
 
 
-router.get("/:id", wrapAsync(async (req,res) => {
-    let {id} = req.params;
-    let listing = await Listing.findById(id).populate(
-        {
-        path: "reviews",
-        populate: { path: "owner"},
-        }
-        ).populate("owner");
-   
-    if( listing ){
-        req.flash("success", "listing exists! yayyy");
-    }
-    else{
-        req.flash("error","listing not exist :(");
-        res.redirect("/listings");
-    }
-    // res.cookie("specificid","cookiehasbeensaved");
-    res.render("listings/show.ejs",{listing: listing});
-}));
+router.get("/:id", wrapAsync(
+   listingController.getOne
+));
 
 
 //Editing
-router.get("/:id/edit", isAuth, isOwner,  wrapAsync(async (req,res) => {
-    let {id} = req.params;
-    let listing = await Listing.findById(id);
-
-      if( listing ){
-        req.flash("success","ID matched and we did the edit");
-    }
-    else {
-        req.flash("error","Error :( ID did not match");
-        res.redirect("/listings");
-    }
-     req.flash("success","ID matched and we did the edit");
-    res.render("./listings/edit.ejs",{listing: listing});
-}));
+router.get("/:id/edit", isAuth, isOwner,  wrapAsync(
+    
+   listingController.editForm
+));
 
 
 router.put(
     "/:id", isAuth, isOwner,
     validateListing,
-    wrapAsync(async (req, res) => {
-        const { id } = req.params;
+    wrapAsync(
+        
+        listingController.put
+        
 
-        const listing = await Listing.findById(id);
-        if (!listing) {
-            req.flash("error", "Listing not found");
-            return res.redirect("/listings");
-        }
-
-        // if (req.user && !listing.owner.equals(req.user._id)) {
-        //     req.flash("error", "You do not have permission to edit this listing");
-        //     return res.redirect(`/listings/${id}`);
-        // }
-
-        await Listing.findByIdAndUpdate(
-            id,
-            req.body.listing,
-            { runValidators: true }
-        );
-
-        req.flash("success", "Listing updated successfully");
-        res.redirect(`/listings/${id}`);
-    })
+)
 );
 
 
@@ -144,21 +72,11 @@ router.put(
 
 
 //delete
-router.delete("/:id", isAuth, isOwner, wrapAsync(async (req,res) => {
-    let {id} = req.params;
-    let listing = await Listing.findById(id);
+router.delete("/:id", isAuth, isOwner, wrapAsync(
+    
+   listingController.delete
 
-      if( ! listing.owner.equals(req.user._id)) {
-        req.flash("error","Error :( ID did not match, you dont have permission");
-        res.redirect(`/listings/${id}`);
-    }
-
-    await Listing.findByIdAndDelete(id);
-
-    req.flash("success","the listing was deleted odfvnuvuv");
-
-    res.redirect("/listings");
-}));
+));
 
 
 
