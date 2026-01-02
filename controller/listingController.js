@@ -11,6 +11,14 @@ module.exports.post = async (req,res,next) => {
     
     let listing = new Listing(req.body.listing);
     listing.owner = req.user._id;
+
+    const imageName = req.file.originalname;
+    const imagePath = req.file.path;
+
+    console.log(imageName, imagePath);
+
+    listing.image.filename = imageName;
+    listing.image.url = imagePath;
     
 
     
@@ -87,17 +95,32 @@ module.exports.editForm =  async (req,res) => {
 module.exports.put = async (req, res) => {
         const { id } = req.params;
 
-        const listing = await Listing.findById(id);
+        let listing = await Listing.findById(id);
         if (!listing) {
             req.flash("error", "Listing not found");
             return res.redirect("/listings");
         }
+        console.log("in the put, listing does exist");
 
         await Listing.findByIdAndUpdate(
             id,
             req.body.listing,
             { runValidators: true }
         );
+
+        if( req.file){
+             const imageName = req.file.originalname;
+                const imagePath = req.file.path;
+
+                console.log(imageName, imagePath);
+
+                listing.image.filename = imageName;
+                listing.image.url = imagePath;
+                await listing.save();
+    
+        }
+
+       
 
         req.flash("success", "Listing updated successfully");
         res.redirect(`/listings/${id}`);

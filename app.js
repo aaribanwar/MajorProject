@@ -25,9 +25,16 @@ const connectFlash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 
+// //multipart files
+// const multer  = require('multer')
+// const upload = multer({ dest: 'uploads/' })
 
+//dotenv
+if( process.env.STAGE == "dev"){
+   
+}
 
-
+ require("dotenv").config();
 
 const sessionOptions = {
         secret: "mysecretstring",

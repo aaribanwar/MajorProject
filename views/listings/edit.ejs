@@ -8,6 +8,7 @@
       method="POST"
       novalidate
       class="needs-validation"
+      enctype="multipart/form-data"
     >
 
       <!-- TITLE -->
@@ -72,22 +73,24 @@
       >
 
       <!-- IMAGE URL -->
-      <label>New Image URL</label>
-      <input
-        type="text"
-        name="listing[image][url]"
-        value="<%= listing.image.url %>"
-        class="form-control"
-      >
+      <div class="mb-2 w-100">
+                    <input
+                        type="file"
+                        class="form-control"
+                        name="imageFile"
+                    >
+                </div>
+       <div class="invalid-feedback">If no url, old image url will be used</div>
+
 
       <!-- IMAGE FILENAME -->
-      <label>Image Filename</label>
+      <!-- <label>Image Filename</label>
       <input
         type="text"
         name="listing[image][filename]"
         value="<%= listing.image.filename %>"
         class="form-control"
-      >
+      > -->
 
       <button type="submit">Update Listing</button>
     </form>

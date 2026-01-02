@@ -79,7 +79,7 @@ module.exports.validateListing = (req,res,next) => {
 
 //MIDDLEWARE REVIEWS VALIDATION
 module.exports.validateReview = (req,res,next) => {
-    console.log("FIRst line in validateReview");
+    console.log(req.body);
     let {error} = reviewSchema.validate(req.body);
     console.log("validating the schema of review");
     if( error ) {

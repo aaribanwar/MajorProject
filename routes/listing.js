@@ -18,10 +18,23 @@ const passport = require("passport");
 //new reviews
 const Review = require("../models/review");
 
+//multipart files
+const multer  = require('multer');
+const {storage} = require("../utils/cloudConfig.js");
+const upload = multer({ storage: storage });
+
 router
     .route("/")
     .get(wrapAsync(listingController.getAll))
-    .post(isAuth, validateListing, wrapAsync(listingController.post));
+    .post(isAuth, upload.single('imageFile'), validateListing, wrapAsync(
+     listingController.post
+
+   //    (req, res) => {
+   //  console.log("BODY:", req.body);
+   //  console.log("FILE:", req.file);
+   //  res.send("Reached handler");}
+
+       ));
 
 
 
@@ -49,6 +62,7 @@ router.route("/:id")
 ))
     .put(
    isAuth, isOwner,
+   upload.single('imageFile'),
     validateListing,
     wrapAsync(
         

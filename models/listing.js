@@ -7,6 +7,7 @@ const defaultImage = {
     filename: "default-image",
     url: "https://thumbs.dreamstime.com/z/no-image-available-icon-177641087.jpg"
 };
+//change listingimage to be required true
 
 const listingSchema = new Schema({
     title: {
