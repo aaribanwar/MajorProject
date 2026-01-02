@@ -18,18 +18,11 @@ const passport = require("passport");
 //new reviews
 const Review = require("../models/review");
 
+router
+    .route("/")
+    .get(wrapAsync(listingController.getAll))
+    .post(isAuth, validateListing, wrapAsync(listingController.post));
 
-router.get("/", wrapAsync(
-    listingController.getAll
-));
-
-
-
-
-//post new
-router.post("/", isAuth, validateListing, wrapAsync(
-    listingController.post
-));
 
 
 router.get("/new", isAuth, 
@@ -41,14 +34,6 @@ router.get("/random", wrapAsync(
     listingController.random
 ));
 
-
-
-
-router.get("/:id", wrapAsync(
-   listingController.getOne
-));
-
-
 //Editing
 router.get("/:id/edit", isAuth, isOwner,  wrapAsync(
     
@@ -56,8 +41,14 @@ router.get("/:id/edit", isAuth, isOwner,  wrapAsync(
 ));
 
 
-router.put(
-    "/:id", isAuth, isOwner,
+
+
+router.route("/:id")
+     .get( wrapAsync(
+   listingController.getOne
+))
+    .put(
+   isAuth, isOwner,
     validateListing,
     wrapAsync(
         
@@ -65,18 +56,32 @@ router.put(
         
 
 )
-);
-
-
-
-
-
+)
 //delete
-router.delete("/:id", isAuth, isOwner, wrapAsync(
+.delete( isAuth, isOwner, wrapAsync(
     
    listingController.delete
 
 ));
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

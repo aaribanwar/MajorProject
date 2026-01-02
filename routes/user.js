@@ -27,27 +27,23 @@ const userController = require("../controller/userController");
 //     }  
 // };
 
-router.get("/signup", wrapAsync( 
-   userController.signupGet
-));
 
-
-router.post(
-  "/signup",
+router.route("/signup").get( wrapAsync( 
+   userController.signupGet)).post(
   wrapAsync(
     userController.signupPost
-
 )
 );
 
 
-router.get("/login", 
+
+
+
+router.route("/login").get( 
      wrapAsync( 
         userController.loginGet
        
-));
-
-router.post("/login",redirectUrl,  passport.authenticate("local",
+)).post(redirectUrl,  passport.authenticate("local",
     {
         failureRedirect: "/users/login",
         failureFlash: true
@@ -57,6 +53,8 @@ wrapAsync(
 
    userController.loginPost
 ));
+
+
 
 router.get("/logout", 
     userController.logout
