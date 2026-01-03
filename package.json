@@ -21,6 +21,7 @@
     "express": "^4.21.2",
     "express-session": "^1.18.2",
     "joi": "^17.13.3",
+    "maplibre-gl": "^5.15.0",
     "method-override": "^3.0.0",
     "mongoose": "^8.13.0",
     "multer": "^2.0.2",
