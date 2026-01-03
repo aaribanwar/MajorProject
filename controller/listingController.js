@@ -1,5 +1,10 @@
 const Listing = require("../models/listing");
 
+
+// GEOCODE TEST (temporary – remove after verifying)
+const { geocodeLocation } = require("../utils/geoTest.js");
+
+
 module.exports.getAll = async (req, res) => {
     let listings = await Listing.find({});
     //res.send("get is working");
@@ -12,6 +17,20 @@ module.exports.post = async (req,res,next) => {
     let listing = new Listing(req.body.listing);
     listing.owner = req.user._id;
 
+    //geolocation
+    const geoData = await geocodeLocation(req.body.listing.location);
+     if (!geoData) {
+    req.flash("error", "Invalid location");
+    return res.redirect("/listings/new");
+    }
+    console.log("geodata: ",geoData);
+
+    listing.geometry = geoData;
+    console.log("listing",listing);
+    //geolocation end print test
+
+    if( req.file){
+
     const imageName = req.file.originalname;
     const imagePath = req.file.path;
 
@@ -20,7 +39,7 @@ module.exports.post = async (req,res,next) => {
     listing.image.filename = imageName;
     listing.image.url = imagePath;
     
-
+    }
     
     await listing.save();
     if( listing) {
@@ -72,6 +91,7 @@ module.exports.getOne =  async (req,res) => {
         req.flash("error","listing not exist :(");
         res.redirect("/listings");
     }
+   
     // res.cookie("specificid","cookiehasbeensaved");
     res.render("listings/show.ejs",{listing: listing});
 }
@@ -93,38 +113,54 @@ module.exports.editForm =  async (req,res) => {
 }
 
 module.exports.put = async (req, res) => {
-        const { id } = req.params;
+  const { id } = req.params;
 
-        let listing = await Listing.findById(id);
-        if (!listing) {
-            req.flash("error", "Listing not found");
-            return res.redirect("/listings");
-        }
-        console.log("in the put, listing does exist");
+  const listing = await Listing.findById(id);
+  if (!listing) {
+    req.flash("error", "Listing not found");
+    return res.redirect("/listings");
+  }
 
-        await Listing.findByIdAndUpdate(
-            id,
-            req.body.listing,
-            { runValidators: true }
-        );
+  const oldLocation = listing.location;
 
-        if( req.file){
-             const imageName = req.file.originalname;
-                const imagePath = req.file.path;
+  // 1. Update basic fields
+  Object.assign(listing, req.body.listing);
 
-                console.log(imageName, imagePath);
+  //valid check
+  const hasValidGeometry =
+  listing.geometry &&
+  listing.geometry.type === "Point" &&
+  Array.isArray(listing.geometry.coordinates) &&
+  listing.geometry.coordinates.length === 2;
 
-                listing.image.filename = imageName;
-                listing.image.url = imagePath;
-                await listing.save();
-    
-        }
 
-       
+  // 2. ALWAYS ensure geometry exists
+  if (!hasValidGeometry || oldLocation !== listing.location) {
+    const geoData = await geocodeLocation(listing.location);
 
-        req.flash("success", "Listing updated successfully");
-        res.redirect(`/listings/${id}`);
+    if (!geoData) {
+      req.flash("error", "Invalid location");
+      return res.redirect(`/listings/${id}/edit`);
     }
+
+    listing.geometry = geoData;
+  }
+
+  // 3. Handle image update
+  if (req.file) {
+    listing.image = {
+      filename: req.file.originalname,
+      url: req.file.path
+    };
+  }
+
+  // 4. Save once
+  await listing.save();
+
+  req.flash("success", "Listing updated successfully");
+  res.redirect(`/listings/${id}`);
+};
+
 
 
 module.exports.delete =  async (req,res) => {

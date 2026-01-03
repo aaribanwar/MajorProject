@@ -17,7 +17,7 @@
         <h6 class="fst-italic fw-bold">Username: <%=listing.owner.username  %></h6>
 
 <!-- only show if logged in -->
- <% if( currUser && listing.owner.equals(currUser)) {%>
+ <% if( currUser && listing.owner.equals(currUser._id)) {%>
     <div class="button-container">
         <form action="/listings/<%=listing._id  %>/edit">
             <button>Edit</button>
@@ -104,9 +104,10 @@
 
     <div class="card mb-3">
         <h1>@<%=review.owner.username%></h1>
-         <p class="starability-result" data-rating="3">
-        Rated: 3 stars
+        <p class="starability-result" data-rating="<%= review.rating %>">
+        Rated: <%= review.rating %> stars
         </p>
+
         <p><%=review.comment%></p>
          
 
@@ -127,7 +128,35 @@
     <% } %>
     </div>
 
+    <!-- map setup -->
+<div class="all-listings">
+    <div id="map"
+    style="height: 200px; width: 100%;"
+    >
+</div>
+<!-- attributre or link -->
+ <!-- <a hrekf="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a> -->
+<script>
 
+    //coords
+    const coords = <%- JSON.stringify(listing.geometry.coordinates) %>
+    console.log("Coords: ",coords);
+
+    const map = new maplibregl.Map({
+        container: 'map', // container id
+        // style: 'https://demotiles.maplibre.org/style.json', // style URL
+        style: 'https://api.maptiler.com/maps/openstreetmap/style.json?key=<%= OPEN_STREET_API_KEY %>',
+        center: coords, // starting position [lng, lat]
+        zoom: 12, // starting zoom
+        maplibreLogo: true
+    });
+
+new maplibregl.Marker({color: "red"})
+  .setLngLat(coords)
+  .addTo(map);
+
+</script>
+</div>
 </main>
 
 

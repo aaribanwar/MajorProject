@@ -25,16 +25,24 @@ const connectFlash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 
-// //multipart files
-// const multer  = require('multer')
-// const upload = multer({ dest: 'uploads/' })
-
 //dotenv
 if( process.env.STAGE == "dev"){
    
 }
 
  require("dotenv").config();
+
+
+
+// GEOCODE TEST (temporary – remove after verifying)
+const { geocodeLocation } = require("./utils/geoTest.js");
+
+// (async () => {
+//   console.log("Logging before geoJSON");
+//   const geoJSON = await geocodeLocation("New Delhi, India");
+//   console.log("geoJSON result:", geoJSON);
+// })();
+
 
 const sessionOptions = {
         secret: "mysecretstring",
@@ -78,6 +86,8 @@ app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   res.locals.currUser = req.user;
+    res.locals.OPEN_STREET_API_KEY = process.env.OPEN_STREET_API_KEY;
+
   next();
 });
 
