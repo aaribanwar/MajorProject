@@ -25,6 +25,11 @@ const connectFlash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 
+//mongostore
+const MongoStore = require('connect-mongo').default;
+const { createWebCryptoAdapter } = require('connect-mongo');
+
+
 //dotenv
 if( process.env.STAGE == "dev"){
    
@@ -37,15 +42,27 @@ if( process.env.STAGE == "dev"){
 // GEOCODE TEST (temporary – remove after verifying)
 const { geocodeLocation } = require("./utils/geoTest.js");
 
-// (async () => {
-//   console.log("Logging before geoJSON");
-//   const geoJSON = await geocodeLocation("New Delhi, India");
-//   console.log("geoJSON result:", geoJSON);
-// })();
 
+const uri = "mongodb+srv://1ms22ad066_db_user:0GFjFCoh1XdS38eP@initialcluster.n1ppn3b.mongodb.net/?appName=initialCluster";
+//mongostore instance
+const store = MongoStore.create( 
+    {
+        mongoUrl: uri,
+        cryptoAdapter: createWebCryptoAdapter({
+    secret: process.env.SECRET_STRING,
+    }),
+    touchAfter: 24*60*60,
+
+    }
+);
+
+store.on("error", () => {
+    console.log("Error in mongo session store",err);
+});
 
 const sessionOptions = {
-        secret: "mysecretstring",
+        store: store,
+        secret: process.env.SECRET_STRING,
         resave: false,
         saveUninitialized: true,
         cookie : {
@@ -116,8 +133,9 @@ app.use((req, res, next) => {
 });
 
 
+//atlas cluster
 async function main(){
-    await mongoose.connect("mongodb://127.0.0.1:27017/airbnb");
+    await mongoose.connect(uri);
 }
 
 main()
@@ -125,18 +143,6 @@ main()
 .catch( err => console.log(err));
 
 
-// //testing the session
-// app.get("/test", (req,res) => {
-   
-//      if( req.session.count){
-//         req.session.count++;
-//     }
-//     else{
-//          req.session.count = 1;
-//     }
-//     res.send(`testing for session will be done, count is: ${req.session.count}`);
-   
-// })
 
 app.get("/", (req,res) => res.redirect("/listings"));
 
