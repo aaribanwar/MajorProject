@@ -1,9 +1,3 @@
-Below is a **production-grade README** suitable for GitHub review, resume screening, and technical interviews.
-I am not assuming your intent is “marketing”; this is written to **withstand skeptical engineering scrutiny** and to surface architectural reasoning explicitly.
-
-If you want a *lighter* or *more portfolio-oriented* version afterward, that can be derived easily.
-
----
 
 # Property Marketplace Web Application
 
